@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    SimpleCursorAdapter forecastAdapter;
+    ForecastAdapter forecastAdapter;
     ListView listForecast;
     private static final String TAG = ForecastFragment.class.getSimpleName();
 
@@ -100,47 +100,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
-        forecastAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.list_item_forecast,
-                null,
-                new String[]{
-                    WeatherContract.WeatherEntry.COLUMN_DATETEXT,
-                    WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
-                    WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
-                    WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
-                },
-                new int[]{
-                    R.id.textDate,
-                    R.id.textForecast,
-                    R.id.textHigh,
-                    R.id.textLow
-                },
-                0
-        );
-        forecastAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                boolean isMetric = Utility.isMetric(getActivity());
-                switch (columnIndex) {
-                    case COL_WEATHER_MAX_TEMP:
-                    case COL_WEATHER_MIN_TEMP: {
-// we have to do some formatting and possibly a conversion
-                        ((TextView) view).setText(Utility.formatTemperature(
-                                cursor.getDouble(columnIndex), isMetric));
-                        return true;
-                    }
-                    case COL_WEATHER_DATE: {
-                        String dateString = cursor.getString(columnIndex);
-                        TextView dateView = (TextView) view;
-                        dateView.setText(Utility.formatDate(dateString));
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-                //new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.textForecast, new ArrayList<String>());
+        forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         listForecast = (ListView) rootView.findViewById(R.id.listViewForecast);
         listForecast.setAdapter(forecastAdapter);
 

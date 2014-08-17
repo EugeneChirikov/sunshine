@@ -166,9 +166,9 @@ public class ForecastDetailActivity extends ActionBarActivity {
                 boolean isMetric = Utility.isMetric(getActivity());
                 dateView.setText(Utility.formatDate(forecastDate));
                 forecastView.setText(cursor.getString(COL_WEATHER_DESC));
-                highView.setText(Utility.formatTemperature(
+                highView.setText(Utility.formatTemperature(getActivity(),
                         cursor.getDouble(COL_WEATHER_MAX_TEMP), isMetric));
-                lowView.setText(Utility.formatTemperature(
+                lowView.setText(Utility.formatTemperature(getActivity(),
                         cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric));
             }
         }
