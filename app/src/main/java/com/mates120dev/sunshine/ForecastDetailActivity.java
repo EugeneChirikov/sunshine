@@ -7,6 +7,8 @@ import android.provider.DocumentsContract;
 import android.provider.DocumentsProvider;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -34,9 +36,21 @@ public class ForecastDetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_forecast_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
+    }
+
+    private void replaceDetailFragment()
+    {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int containerId = R.id.container;
+        Fragment fragment = new DetailFragment();
+        String tag = null;
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(containerId, fragment, tag);
+        ft.addToBackStack(tag);
+        ft.commit();
     }
 
     @Override
@@ -85,100 +99,5 @@ public class ForecastDetailActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-        private static final int FORECAST_LOADER = 0;
-        private String mLocation;
-        private static final String FORECAST_DATE_EXTRA = "forecast_date_extra";
-        TextView dateView;
-        TextView forecastView;
-        TextView highView;
-        TextView lowView;
-        String forecastDate;
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            if (mLocation != null && !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
-                getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
-            }
-        }
-
-        @Override
-        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            Intent intent = getActivity().getIntent();
-            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT))
-            {
-                forecastDate = intent.getStringExtra(Intent.EXTRA_TEXT);
-
-                getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-            }
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_forcast_detail, container, false);
-            dateView = (TextView) rootView.findViewById(R.id.textDate);
-            forecastView = (TextView) rootView.findViewById(R.id.textForecast);
-            highView = (TextView) rootView.findViewById(R.id.textHigh);
-            lowView = (TextView) rootView.findViewById(R.id.textLow);
-            return rootView;
-        }
-
-        private static final String[] FORECAST_COLUMNS = {
-                WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
-                WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
-                WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
-        };
-
-        public static final int COL_WEATHER_DESC = 0;
-        public static final int COL_WEATHER_MAX_TEMP = 1;
-        public static final int COL_WEATHER_MIN_TEMP = 2;
-
-        @Override
-        public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-            String sortOrder = WeatherContract.WeatherEntry.COLUMN_SHORT_DESC + " ASC";
-            mLocation = Utility.getPreferredLocation(getActivity());
-            Uri weatherForLocationAndDateUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(mLocation, forecastDate);
-
-            return new CursorLoader(
-                    getActivity(),
-                    weatherForLocationAndDateUri,
-                    FORECAST_COLUMNS,
-                    null,
-                    null,
-                    sortOrder
-            );
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-            if (cursor != null && cursor.moveToPosition(0)) {
-                boolean isMetric = Utility.isMetric(getActivity());
-                dateView.setText(Utility.formatDate(forecastDate));
-                forecastView.setText(cursor.getString(COL_WEATHER_DESC));
-                highView.setText(Utility.formatTemperature(getActivity(),
-                        cursor.getDouble(COL_WEATHER_MAX_TEMP), isMetric));
-                lowView.setText(Utility.formatTemperature(getActivity(),
-                        cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric));
-            }
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> cursorLoader) {
-            dateView.setText("");
-            forecastView.setText("");
-            highView.setText("");
-            lowView.setText("");
-        }
     }
 }

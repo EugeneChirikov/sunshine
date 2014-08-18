@@ -34,8 +34,8 @@ public class TestDb extends AndroidTestCase {
         double testLatitude = 64.7488;
         double testLongitude = -147.353;
         ContentValues values = new ContentValues();
-        values.put(LocationEntry.COLUMN_POSTAL_CODE, testLocationSetting);
-        values.put(LocationEntry.COLUMN_LOCATION_NAME, testCityName);
+        values.put(LocationEntry.COLUMN_LOCATION_SETTING, testLocationSetting);
+        values.put(LocationEntry.COLUMN_CITY_NAME, testCityName);
 //        values.put(LocationEntry.COLUMN_COORD_LAT, testLatitude);
 //        values.put(LocationEntry.COLUMN_COORD_LONG, testLongitude);
         return values;

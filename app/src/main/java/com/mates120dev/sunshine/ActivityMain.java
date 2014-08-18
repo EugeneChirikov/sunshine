@@ -27,6 +27,8 @@ import java.util.List;
 
 public class ActivityMain extends ActionBarActivity {
 
+    ViewServer viewServer = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,25 @@ public class ActivityMain extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewServer = ViewServer.get(this);
+        try {
+            viewServer.start();
+            viewServer.addWindow(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+            viewServer = null;
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (viewServer != null)
+            viewServer.stop();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
