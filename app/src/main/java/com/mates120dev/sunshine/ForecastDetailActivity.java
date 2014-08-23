@@ -36,21 +36,9 @@ public class ForecastDetailActivity extends ActionBarActivity {
         setContentView(R.layout.activity_forecast_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DetailFragment())
+                    .add(R.id.weather_detail_container, DetailFragment.newInstance(getData()))
                     .commit();
         }
-    }
-
-    private void replaceDetailFragment()
-    {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int containerId = R.id.container;
-        Fragment fragment = new DetailFragment();
-        String tag = null;
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(containerId, fragment, tag);
-        ft.addToBackStack(tag);
-        ft.commit();
     }
 
     @Override
@@ -71,9 +59,9 @@ public class ForecastDetailActivity extends ActionBarActivity {
     {
         String forecast = null;
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT))
+        if (intent != null && intent.hasExtra(DetailFragment.FORECAST_DATE_EXTRA))
         {
-            forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
+            forecast = intent.getStringExtra(DetailFragment.FORECAST_DATE_EXTRA);
         }
         return forecast;
     }

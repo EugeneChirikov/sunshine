@@ -3,6 +3,7 @@ package com.mates120dev.sunshine;
 /**
  * Created by eugene on 7/26/14.
  */
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.support.v4.widget.CursorAdapter;
 import android.widget.ListView;
@@ -33,12 +35,25 @@ import java.util.Date;
  * http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7
  */
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
+    Callback mListener;
     ForecastAdapter forecastAdapter;
     ListView listForecast;
     private static final String TAG = ForecastFragment.class.getSimpleName();
+    private static final String SELECTED_ROW_EXTRA = "selected_row_extra";
+    private String mLocation;
+    private int currentSelectedPosition = -1;
 
     public ForecastFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (Callback) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement Callback");
+        }
     }
 
     @Override
@@ -95,13 +110,25 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (currentSelectedPosition > 0)
+            outState.putInt(SELECTED_ROW_EXTRA, currentSelectedPosition);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
         listForecast = (ListView) rootView.findViewById(R.id.listViewForecast);
         listForecast.setAdapter(forecastAdapter);
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ROW_EXTRA))
+        {
+            savedInstanceState
+            outState.get(SELECTED_ROW_EXTRA, currentSelectedPosition);
+        }
 
         listForecast.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -112,11 +139,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 Cursor cursor = adapter.getCursor();
                 if (cursor == null || !cursor.moveToPosition(position))
                     return;
-
                 String date = cursor.getString(COL_WEATHER_DATE);
-                Intent intent = new Intent(ForecastFragment.this.getActivity(), ForecastDetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, date);
-                startActivity(intent);
+                mListener.onItemSelected(date);
+                currentSelectedPosition = position;
             }
         });
         return rootView;
@@ -147,8 +172,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public static final int COL_WEATHER_ID = 6;
 
     private static final int FORECAST_LOADER = 0;
-    private String mLocation;
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {

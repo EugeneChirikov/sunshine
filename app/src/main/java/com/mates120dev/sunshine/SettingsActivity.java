@@ -1,11 +1,15 @@
 package com.mates120dev.sunshine;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 
 import com.mates120dev.sunshine.data.WeatherContract;
@@ -73,5 +77,11 @@ public class SettingsActivity extends PreferenceActivity
             preference.setSummary(stringValue);
         }
         return true;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public Intent getParentActivityIntent() {
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 }

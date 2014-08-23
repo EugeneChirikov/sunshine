@@ -23,7 +23,7 @@ import com.mates120dev.sunshine.data.WeatherContract;
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int FORECAST_LOADER = 0;
     private String mLocation;
-    private static final String FORECAST_DATE_EXTRA = "forecast_date_extra";
+    public static final String FORECAST_DATE_EXTRA = "forecast_date_extra";
     TextView monthView;
     TextView weekView;
     TextView forecastView;
@@ -35,7 +35,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     ImageView image;
     String forecastDate;
 
-    public DetailFragment() {
+    public static DetailFragment newInstance(String date) {
+        DetailFragment f = new DetailFragment();
+        Bundle args = new Bundle();
+        args.putString(FORECAST_DATE_EXTRA, date);
+        f.setArguments(args);
+        return f;
     }
 
     @Override
@@ -49,11 +54,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT))
+        Bundle extras = getArguments();
+        if (extras != null)
         {
-            forecastDate = intent.getStringExtra(Intent.EXTRA_TEXT);
-
+            forecastDate = extras.getString(FORECAST_DATE_EXTRA);
             getLoaderManager().initLoader(FORECAST_LOADER, null, this);
         }
     }
