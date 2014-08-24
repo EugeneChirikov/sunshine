@@ -42,6 +42,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String SELECTED_ROW_EXTRA = "selected_row_extra";
     private String mLocation;
     private int currentSelectedPosition = -1;
+    private boolean useTodayLayout = true;
 
     public ForecastFragment() {
     }
@@ -102,6 +103,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
+    public void setUseTodayLayout(boolean use)
+    {
+        useTodayLayout = use;
+        if (forecastAdapter != null)
+            forecastAdapter.setUseTodayLayout(useTodayLayout);
+    }
+
     private void updateWeather()
     {
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
@@ -122,13 +130,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
+        forecastAdapter.setUseTodayLayout(useTodayLayout);
         listForecast = (ListView) rootView.findViewById(R.id.listViewForecast);
         listForecast.setAdapter(forecastAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ROW_EXTRA))
-        {
-            savedInstanceState
-            outState.get(SELECTED_ROW_EXTRA, currentSelectedPosition);
-        }
+            currentSelectedPosition = savedInstanceState.getInt(SELECTED_ROW_EXTRA);
+
 
         listForecast.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -193,6 +200,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor data) {
         forecastAdapter.swapCursor(data);
+        if (currentSelectedPosition > 0)
+            listForecast.smoothScrollToPosition(currentSelectedPosition);
     }
 
     @Override

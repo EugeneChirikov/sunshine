@@ -5,40 +5,40 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin" >
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Today"
-                android:id="@+id/textWeekDay">
-            </TextView>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="JUNE 24"
-                android:id="@+id/textMonthDay">
-            </TextView>
-        </LinearLayout>
+        android:paddingBottom="@dimen/activity_vertical_margin">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:padding="16dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/textWeekDay"
+                    android:text="Weekday">
+                </TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/textMonthDay"
+                    android:text="99 December">
+                </TextView>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -49,14 +49,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="23"
-                    android:id="@+id/textHigh">
+                    android:id="@+id/textHigh"
+                    android:text="44">
                 </TextView>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="15"
-                    android:id="@+id/textLow">
+                    android:id="@+id/textLow"
+                    android:text="33">
                 </TextView>
             </LinearLayout>
 
@@ -65,49 +65,49 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center_horizontal">
+                android:gravity="center">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/image" />
+                    android:id="@+id/image"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_launcher"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="Clear"
-                    android:id="@+id/textForecast">
+                    android:id="@+id/textForecast"
+                    android:text="sdf">
                 </TextView>
             </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_gravity="center"
+            android:gravity="left">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/format_humidity"
                 android:id="@+id/textHumidity">
             </TextView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="WIND:"
                 android:id="@+id/textWind">
             </TextView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/format_pressure"
                 android:id="@+id/textPressure">
             </TextView>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </ScrollView>

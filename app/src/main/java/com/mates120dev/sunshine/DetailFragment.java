@@ -65,7 +65,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_forcast_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_forecast_detail, container, false);
         weekView = (TextView) rootView.findViewById(R.id.textWeekDay);
         monthView = (TextView) rootView.findViewById(R.id.textMonthDay);
         forecastView = (TextView) rootView.findViewById(R.id.textForecast);
