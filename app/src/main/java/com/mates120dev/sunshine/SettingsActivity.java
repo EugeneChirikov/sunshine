@@ -13,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 
 import com.mates120dev.sunshine.data.WeatherContract;
+import com.mates120dev.sunshine.service.SunshineService;
+import com.mates120dev.sunshine.sync.SunshineSyncAdapter;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings.
@@ -57,8 +59,10 @@ public class SettingsActivity extends PreferenceActivity
         String stringValue = value.toString();
         if ( !mBindingPreference ) {
             if (preference.getKey().equals(getString(R.string.pref_location_key))) {
-                FetchWeatherTask weatherTask = new FetchWeatherTask(this);
-                weatherTask.execute(stringValue);
+//                Intent intent = new Intent(this, SunshineService.class);
+//                intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, stringValue);
+//                startService(intent);
+                SunshineSyncAdapter.syncImmediately(this);
             } else {
                 getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
             }

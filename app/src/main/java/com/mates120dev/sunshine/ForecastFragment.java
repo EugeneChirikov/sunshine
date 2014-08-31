@@ -4,6 +4,10 @@ package com.mates120dev.sunshine;
  * Created by eugene on 7/26/14.
  */
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,6 +30,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.widget.ListView;
 
 import com.mates120dev.sunshine.data.WeatherContract;
+import com.mates120dev.sunshine.service.SunshineService;
+import com.mates120dev.sunshine.sync.SunshineSyncAdapter;
 
 import java.util.Date;
 
@@ -86,20 +92,46 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
             case R.id.action_show_location:
             {
-                mLocation = Utility.getPreferredLocation(getActivity());
-                Uri locationUri = Uri.parse("geo:0,0?").buildUpon()
-                        .appendQueryParameter("q", mLocation)
-                        .build();
-                Intent intent = new Intent(Intent.ACTION_VIEW, locationUri);
-                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivity(intent);
-                }
-                else
-                    Log.d(TAG, "No app to show map installed");
+//                mLocation = Utility.getPreferredLocation(getActivity());
+//                Uri locationUri = Uri.parse("geo:0,0?").buildUpon()
+//                        .appendQueryParameter("q", mLocation)
+//                        .build();
+//                Intent intent = new Intent(Intent.ACTION_VIEW, locationUri);
+//                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+//                    startActivity(intent);
+//                }
+//                else
+//                    Log.d(TAG, "No app to show map installed");
+                openPreferredLocationInMap();
                 return true;
             }
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openPreferredLocationInMap() {
+// Using the URI scheme for showing a location found on a map. This super-handy
+// intent can is detailed in the "Common Intents" page of Android's developer site:
+// http://developer.android.com/guide/components/intents-common.html#Maps
+        if ( null != forecastAdapter ) {
+            Cursor c = forecastAdapter.getCursor();
+            if ( null != c ) {
+                c.moveToPosition(0);
+                String posLat = c.getString(COL_COORD_LAT);
+                String posLong = c.getString(COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
+
         }
     }
 
@@ -112,9 +144,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     private void updateWeather()
     {
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity());
-        String location = Utility.getPreferredLocation(getActivity());
-        fetchWeatherTask.execute(location);
+//        Intent intent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+//        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+//                Utility.getPreferredLocation(getActivity()));
+//
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+//        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+//        Log.v(TAG, "Updating in 5 seconds");
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent);
+
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     @Override
@@ -167,7 +206,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
             WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
-            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
     };
 
     public static final int COL_ID = 0;
@@ -177,6 +218,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public static final int COL_WEATHER_MIN_TEMP = 4;
     public static final int COL_LOCATION_SETTING = 5;
     public static final int COL_WEATHER_ID = 6;
+    public static final int COL_COORD_LAT = 7;
+    public static final int COL_COORD_LONG = 8;
 
     private static final int FORECAST_LOADER = 0;
 
